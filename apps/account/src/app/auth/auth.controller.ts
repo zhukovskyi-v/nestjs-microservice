@@ -9,18 +9,19 @@ import {
 import { AuthService } from './auth.service';
 import { UpdateAuthDto } from './dto';
 import { AccountLogin, AccountRegister } from '@microservice/contracts';
+import { RMQRoute } from 'nestjs-rmq';
 
-@Controller('auth')
+@Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {
   }
 
-  @Post('register')
+  @RMQRoute(AccountRegister.topic)
   register(@Body() registerDto: AccountRegister.Request): Promise<AccountRegister.Response> {
     return this.authService.create(registerDto);
   }
 
-  @Post('login')
+  @RMQRoute(AccountLogin.topic)
   login(@Body() loginDto: AccountLogin.Request): Promise<AccountLogin.Response> {
     return this.authService.login(loginDto);
   }
