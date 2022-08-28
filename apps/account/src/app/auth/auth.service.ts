@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserRoles } from '@microservice/interfaces';
+import { AccountRegister } from '@microservice/contracts';
 import { UserRepository } from '../user/repositories';
 import { LoginDto, RegisterDto, UpdateAuthDto } from './dto';
 import { UserEntity } from '../user/entities';
@@ -10,7 +11,7 @@ export class AuthService {
   constructor(private readonly userRepository: UserRepository, private readonly jwtService: JwtService) {
   }
 
-  async create({ email, password, displayName, role }: RegisterDto) {
+  async create({ email, password, displayName, role }: RegisterDto): Promise<AccountRegister.Response> {
     const oldUser = await this.userRepository.findUserByEmail(email);
 
     if (oldUser) {
@@ -23,9 +24,9 @@ export class AuthService {
       role: role || UserRoles.STUDENT
     }).setPassword(password);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: pass, ...newUser } = await this.userRepository.createUser(newUserEntity);
-    return newUser;
+    const res = await this.userRepository.createUser(newUserEntity);
+
+    return { displayName: res.displayName, email: res.email, role: res.role, _id: res._id };
   }
 
   async validateUser(email: string, password: string): Promise<{ id: string }> {

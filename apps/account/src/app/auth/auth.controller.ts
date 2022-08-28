@@ -1,6 +1,5 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
   Patch,
@@ -8,7 +7,8 @@ import {
   Delete
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto, RegisterDto, UpdateAuthDto } from './dto';
+import { UpdateAuthDto } from './dto';
+import { AccountLogin, AccountRegister } from '@microservice/contracts';
 
 @Controller('auth')
 export class AuthController {
@@ -16,24 +16,13 @@ export class AuthController {
   }
 
   @Post('register')
-  register(@Body() registerDto: RegisterDto) {
-    console.log({ registerDto });
+  register(@Body() registerDto: AccountRegister.Request): Promise<AccountRegister.Response> {
     return this.authService.create(registerDto);
   }
 
   @Post('login')
-  login(@Body() loginDto: LoginDto) {
+  login(@Body() loginDto: AccountLogin.Request): Promise<AccountLogin.Response> {
     return this.authService.login(loginDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
   }
 
   @Patch(':id')

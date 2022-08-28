@@ -1,3 +1,5 @@
+#  docker-compose --env-file envs\.account-env  up -d
+
 version: '3'
 services:
   mongo:
@@ -11,3 +13,12 @@ services:
       - 27017:27017
     volumes:
       - ./mongo-data-4.4:/data/db
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - 5672:5672
+      - 15672:15672
