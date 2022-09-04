@@ -5,10 +5,10 @@ import {
   Param,
   Delete
 } from '@nestjs/common';
+import { RMQRoute, RMQValidate } from 'nestjs-rmq';
+import { AccountLogin, AccountRegister } from '@microservice/contracts';
 import { AuthService } from './auth.service';
 import { UpdateAuthDto } from './dto';
-import { AccountLogin, AccountRegister } from '@microservice/contracts';
-import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 
 @Controller()
 export class AuthController {
