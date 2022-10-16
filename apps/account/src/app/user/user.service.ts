@@ -1,8 +1,9 @@
 import { Body, Injectable } from '@nestjs/common';
-import { AccountChangeProfile } from '@microservice/contracts';
+import { AccountBuyCourse, AccountChangeProfile, AccountCheckPayment } from '@microservice/contracts';
 import { UserEntity } from './entities';
 import { UserRepository } from './repositories';
 import { RMQService } from 'nestjs-rmq';
+import { BuyCourseSaga } from './sagas';
 
 @Injectable()
 export class UserService {
@@ -18,5 +19,29 @@ export class UserService {
     const userEntity = new UserEntity(existedUser).changeProfile(user);
     await this.userRepository.changeProfile(userEntity);
     return {};
+  }
+
+  async buyCourse(@Body() { userId, courseId }: AccountBuyCourse.Request): Promise<AccountBuyCourse.Response> {
+    const existedUser = await this.userRepository.findUserById(userId);
+    if (!existedUser) {
+      throw new Error(`User ${userId} not found`);
+    }
+    const userEntity = new UserEntity(existedUser);
+    const saga = new BuyCourseSaga(userEntity, courseId, this.rmqService);
+    const { paymentLink, user } = await saga.getState().pay();
+    await this.userRepository.changeProfile(user);
+    return { paymentLink };
+  }
+
+  async checkPayment(@Body() { userId, courseId }: AccountCheckPayment.Request): Promise<AccountCheckPayment.Response> {
+    const existedUser = await this.userRepository.findUserById(userId);
+    if (!existedUser) {
+      throw new Error(`User ${userId} not found`);
+    }
+    const userEntity = new UserEntity(existedUser);
+    const saga = new BuyCourseSaga(userEntity, courseId, this.rmqService);
+    const { user, status } = await saga.getState().checkPayment();
+    await this.userRepository.changeProfile(user);
+    return { status };
   }
 }

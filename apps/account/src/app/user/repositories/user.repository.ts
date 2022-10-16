@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-
 import { Model } from 'mongoose';
 import { UserEntity } from '../entities';
-import { UserCoursesModel, UserModel } from '../models/user.model';
+import { UserModel } from '../models/user.model';
 import { PurchaseState } from '@microservice/interfaces';
-import { AccountChangeProfile } from '@microservice/contracts';
 
 @Injectable()
 export class UserRepository {
