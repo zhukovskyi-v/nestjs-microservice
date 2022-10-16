@@ -14,9 +14,9 @@ export class AuthController {
   }
 
   @Post('register')
-  register(@Body() registerDto: RegisterDto) {
+  async register(@Body() registerDto: RegisterDto) {
     try {
-      return this.rmqService.send<AccountRegister.Request, AccountRegister.Response>(AccountRegister.topic, registerDto);
+      return await this.rmqService.send<AccountRegister.Request, AccountRegister.Response>(AccountRegister.topic, registerDto);
     } catch (e) {
       if (e instanceof Error) {
         throw new UnauthorizedException(e.message);
@@ -25,9 +25,9 @@ export class AuthController {
   }
 
   @Post('login')
-  login(@Body() loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto) {
     try {
-      return this.rmqService.send<AccountLogin.Request, AccountLogin.Response>(AccountLogin.topic, loginDto);
+      return await this.rmqService.send<AccountLogin.Request, AccountLogin.Response>(AccountLogin.topic, loginDto);
     } catch (e) {
       if (e instanceof Error) {
         throw new UnauthorizedException(e.message);

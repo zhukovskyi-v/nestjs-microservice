@@ -3,7 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { Model } from 'mongoose';
 import { UserEntity } from '../entities';
-import { UserModel } from '../models/user.model';
+import { UserCoursesModel, UserModel } from '../models/user.model';
+import { PurchaseState } from '@microservice/interfaces';
+import { AccountChangeProfile } from '@microservice/contracts';
 
 @Injectable()
 export class UserRepository {
@@ -17,13 +19,32 @@ export class UserRepository {
     return newUser.save();
   }
 
-  async findUserByEmail(email: string): Promise<UserModel> {
+  async findUserByEmail(email: string) {
     return this.userModel.findOne({ email });
 
+  }
+
+  async findUserById(id: string) {
+    return this.userModel.findById(id).exec();
   }
 
   async deleteUserByEmail(email: string) {
     await this.userModel.deleteOne({ email }).exec();
     return true;
+  }
+
+  async buyCourse(id: string) {
+    return this.userModel.findByIdAndUpdate(id, {
+      $set: {
+        courses: [{
+          courseId: 'lorem',
+          purchaseState: PurchaseState.WaitingForPayment
+        }]
+      }
+    }).exec();
+  }
+
+  async changeProfile({ _id, ...rest }: UserEntity) {
+    return this.userModel.updateOne({ _id }, { $set: rest }).exec();
   }
 }

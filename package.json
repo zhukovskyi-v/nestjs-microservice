@@ -5,7 +5,8 @@
   "scripts": {
     "start": "nx serve",
     "build": "nx build",
-    "test": "nx test"
+    "test": "nx test",
+    "autoclinick": "clinic doctor --on-port 'autocannon -m POST localhost:$PORT/api/auth/register' -c 2 -d 5 -- node dist/apps/account/main.js && dist/apps/api-gateway/main.js"
   },
   "private": true,
   "dependencies": {

@@ -8,7 +8,7 @@ async function bootstrap() {
   const globalPrefix = 'api'
   app.setGlobalPrefix(globalPrefix)
   await app.init()
-  Logger.log(`🚀 Account is init`)
+  Logger.log(`🚀 Account is inited`)
 }
 
 bootstrap()
